@@ -1,0 +1,12 @@
+# Data (too large / sensitive)
+data/
+*.parquet
+*.pkl
+*.csv
+
+# Logs
+*.log
+__pycache__/
+*.pyc
+.DS_Store
+.env
