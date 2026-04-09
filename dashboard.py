@@ -392,15 +392,15 @@ def style_table(df):
 
     if "% Canje GM" in df.columns:
         avg = df["% Canje GM"].mean()
-        styler = styler.applymap(lambda v: color_pct(v, avg), subset=["% Canje GM"])
+        styler = styler.map(lambda v: color_pct(v, avg), subset=["% Canje GM"])
     if "Lift (pp)" in df.columns:
-        styler = styler.applymap(color_lift, subset=["Lift (pp)"])
+        styler = styler.map(color_lift, subset=["Lift (pp)"])
     if "% Conv." in df.columns:
         avg_conv = df["% Conv."].mean()
-        styler = styler.applymap(lambda v: color_pct(v, avg_conv), subset=["% Conv."])
+        styler = styler.map(lambda v: color_pct(v, avg_conv), subset=["% Conv."])
     if "% Canje top seg." in df.columns:
         avg_top = df["% Canje top seg."].mean()
-        styler = styler.applymap(lambda v: color_pct(v, avg_top), subset=["% Canje top seg."])
+        styler = styler.map(lambda v: color_pct(v, avg_top), subset=["% Canje top seg."])
 
     return styler
 
@@ -704,7 +704,7 @@ def seccion_detalle(camp_name, df_r, df_omm, df_hist, valor_punto: float = 0.01)
                 "GC Canjean":  lambda x: f"{int(x):,}",
                 "GC %":        lambda x: f"{x:.1f}%",
                 "Lift (pp)":   fmt_lift,
-            }).applymap(color_lift_cell, subset=["Lift (pp)"])
+            }).map(color_lift_cell, subset=["Lift (pp)"])
             st.dataframe(styler, hide_index=True, use_container_width=True)
     else:
         st.info("Sin datos de funnel PRE para esta campaña.")
@@ -862,7 +862,7 @@ def seccion_detalle(camp_name, df_r, df_omm, df_hist, valor_punto: float = 0.01)
                 if has_pred:
                     fmt_rfm["Pred % (5d)"] = lambda x: f"{x:.1f}%" if pd.notna(x) else "—"
                 st.dataframe(
-                    tbl.style.format(fmt_rfm, na_rep="—").applymap(color_lift_rfm, subset=["Lift (pp)"]),
+                    tbl.style.format(fmt_rfm, na_rep="—").map(color_lift_rfm, subset=["Lift (pp)"]),
                     hide_index=True, use_container_width=True,
                 )
                 if has_pred:
@@ -906,7 +906,7 @@ def seccion_detalle(camp_name, df_r, df_omm, df_hist, valor_punto: float = 0.01)
                             return ""
                         df_comb = pd.DataFrame(combined_rows)
                         st.dataframe(
-                            df_comb.style.applymap(color_lift_comb, subset=["Lift (pp)"]),
+                            df_comb.style.map(color_lift_comb, subset=["Lift (pp)"]),
                             hide_index=True, use_container_width=True,
                         )
                         st.caption("Open/Click rate a nivel de campaña (igual para todos los segmentos).")
@@ -1178,7 +1178,7 @@ def style_pivot(df_pivot):
         except Exception: pass
         return ""
 
-    return df_pivot.style.format(fmt).applymap(color_pct)
+    return df_pivot.style.format(fmt).map(color_pct)
 
 
 # ── VISTA GRANULAR ────────────────────────────────────────────────────────────
@@ -1593,7 +1593,7 @@ def seccion_rfm(df_rfm, df_r):
             "GC Clientes": "{:,}", "GC Canjean": "{:,}",
             "GM %": "{:.1f}%", "GC %": "{:.1f}%", "Lift (pp)": "{:.1f}",
         }
-        styled = df_tbl.style.format(fmt_tbl).applymap(color_lift, subset=["Lift (pp)"])
+        styled = df_tbl.style.format(fmt_tbl).map(color_lift, subset=["Lift (pp)"])
         st.dataframe(styled, use_container_width=True, hide_index=True)
         st.caption(
             "**Lift (pp)** = GM% − GC%. "
@@ -1736,7 +1736,7 @@ def seccion_rfm(df_rfm, df_r):
                 }
                 st.dataframe(
                     tbl_cal.style.format(fmt_cal, na_rep="—")
-                    .applymap(color_gap_cal, subset=["Gap (pp)"]),
+                    .map(color_gap_cal, subset=["Gap (pp)"]),
                     hide_index=True, use_container_width=True,
                 )
                 st.caption(
