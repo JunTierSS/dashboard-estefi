@@ -509,11 +509,22 @@ def seccion_resumen(df_camp):
             seg_cols = [c for c in RFM_ORDER_P if c in pivot_df.columns]
 
             fmt_pivot = {c: "{:.1f}%" for c in seg_cols}
+
+            def color_green(v):
+                try:
+                    val = float(str(v).replace("%", ""))
+                    if val >= 10: return "background-color:#1B5E20;color:white;font-weight:bold"
+                    if val >= 6:  return "background-color:#388E3C;color:white"
+                    if val >= 3:  return "background-color:#81C784"
+                    if val > 0:   return "background-color:#C8E6C9"
+                except Exception: pass
+                return ""
+
             styled_pivot = (
                 pivot_df[seg_cols]
                 .style
                 .format(fmt_pivot, na_rep="—")
-                .background_gradient(cmap="Greens", axis=None, subset=seg_cols)
+                .map(color_green)
             )
             st.dataframe(styled_pivot, use_container_width=True)
             st.caption("% Canje GM por segmento RFM. Verde más intenso = mayor conversión.")
