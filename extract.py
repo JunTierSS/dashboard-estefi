@@ -60,10 +60,13 @@ def main():
                         help="Fecha inicio en formato YYYY-MM-DD (default: 2026-02-01)")
     parser.add_argument("--fecha-fin",    default=None,
                         help="Fecha fin en formato YYYY-MM-DD (default: hoy)")
+    parser.add_argument("--skip-rfm", action="store_true",
+                        help="Saltar descarga de rfm_all_clients si ya existe en disco (ahorra ~5min y 772MB)")
     args = parser.parse_args()
 
     fecha_inicio = args.fecha_inicio
     fecha_fin    = args.fecha_fin or pd.Timestamp.today().strftime("%Y-%m-%d")
+    skip_rfm     = args.skip_rfm
 
     print("=" * 70)
     print("EXTRACCION CAMPAÑAS")
@@ -153,6 +156,12 @@ def main():
     # ── 4. RFM: todos los clientes de la partición actual ───────────────────
     print("\n[4] RFM — todos los clientes (partición actual de clients_entity)")
     try:
+        _rfm_path = os.path.join(OUTPUT_DIR, "rfm_all_clients.parquet")
+        if skip_rfm and os.path.exists(_rfm_path):
+            _sz = os.path.getsize(_rfm_path) / 1024 / 1024
+            _mt = pd.Timestamp(os.path.getmtime(_rfm_path), unit="s").strftime("%Y-%m-%d %H:%M")
+            print(f"  ⏭  --skip-rfm: archivo existente ({_sz:.0f} MB, generado {_mt})", flush=True)
+            raise StopIteration  # saltar descarga intencionalmente
         # Paso 1: calcular la partición más reciente (último fin de mes) en Python
         # clients_entity tiene require_partition_filter, no permite MAX() sin filtro.
         hoy = pd.Timestamp.today()
@@ -444,6 +453,8 @@ def main():
 
         save(df_rfm, "rfm_all_clients")
 
+    except StopIteration:
+        pass  # --skip-rfm: descarga omitida intencionalmente
     except Exception as e:
         print(f"  ERROR en RFM all clients: {e}", flush=True)
         import traceback; traceback.print_exc()

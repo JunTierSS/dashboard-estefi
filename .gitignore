@@ -1,10 +1,8 @@
-# Data (too large / sensitive)
-data/
-*.parquet
-*.pkl
-*.csv
+# Archivos demasiado grandes para GitHub (>100 MB)
+data/rfm_all_clients.parquet
+data/rfm_campaigns_individual/
 
-# Logs
+# Logs y temporales
 *.log
 __pycache__/
 *.pyc
